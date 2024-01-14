@@ -1,0 +1,130 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+
+/* Box sizing rules */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Prevent font size inflation */
+html {
+  -moz-text-size-adjust: none;
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+/* Remove default margin */
+* {
+  margin: 0;
+  padding: 0;
+  font: inherit;
+}
+
+/* Remove list styles on ul, ol elements with a list role, which suggests default styling will be removed */
+ul[role="list"],
+ol[role="list"] {
+  list-style: none;
+}
+
+/* Set core root defaults */
+html:focus-within {
+  scroll-behavior: smooth;
+}
+
+/* Set core body defaults */
+body {
+  line-height: 1.5;
+}
+
+/* A elements that don't have a class get default styles */
+a:not([class]) {
+  text-decoration-skip-ink: auto;
+}
+
+/* Make images easier to work with */
+img,
+picture,
+svg {
+  max-width: 100%;
+  display: block;
+}
+
+/* DEV CHOICES */
+
+* {
+  /* FONT SIZES */
+  --h1-size: clamp(1.45rem, 3.8vw, 2rem);
+  --h2-size: clamp(1.25rem, 3vw, 1.5rem);
+  --p-size: clamp(0.9375rem, 0.9158rem + 0.1087vw, 1rem);
+  /* --p-size: clamp(0.88rem, 1.4vw, 1rem); */
+
+  /* LAYOUT UTILS */
+  --input-radius: 9999px;
+  --card-radius: clamp(10px, 2vw, 16px);
+  --card-shadow: 0px 0px 15px -3px rgba(0, 0, 0, 0.1);
+  --input-sizing-x: clamp(0.7rem, 5%, 1rem);
+  --input-sizing-y: clamp(0.4rem, 5%, 0.7rem);
+
+  /* LAYOUT SPACING */
+  --gap-spacing: clamp(0.8rem, 2.5vmax, 1.2rem);
+  --padding-y: clamp(1.3rem, 3%, 1.9rem);
+  --padding-x: clamp(1.5rem, 3%, 2rem);
+  --margin-y: min(1rem, 8vh);
+
+  /* if used for margin, change to min(rem, vh) */
+  /* this gap is for teh gap: prop */
+
+  /* COLORS */
+  --main-color: hsl(202, 74%, 53%);
+  --accent-color: hsl(37, 100%, 73%);
+  --bg-color: whitesmoke;
+  --text-color: #4e4e4e;
+
+  /* FONT FAMILY  */
+  --roboto: "Roboto", sans-serif;
+  --poppins: "Poppins", sans-serif;
+}
+
+html {
+  font-family: var(--roboto);
+  font-size: 18px;
+  color: var(--text-color);
+}
+
+h1 {
+  font-size: var(--h1-size);
+  font-weight: 700;
+}
+
+h2 {
+  font-weight: 700;
+  font-size: var(--h2-size);
+}
+
+p {
+  font-size: var(--p-size);
+  font-family: var(--poppins);
+  font-weight: normal;
+}
+
+button {
+  font-size: var(--p-size);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+a {
+  font-size: var(--p-size);
+}
+
+label {
+  font-size: var(--p-size);
+}
