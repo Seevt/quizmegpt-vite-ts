@@ -2,18 +2,34 @@
 import Login from '@/components/Login Components/Login.vue';
 import Register from '@/components/Login Components/Register.vue';
 import { ref } from 'vue';
+import { getAuth, sendPasswordResetEmail, type Auth } from 'firebase/auth';
 
 const registerForm = ref(false);
 
+let auth: Auth;
+async function resetPassword(): Promise<void> {
+  auth = getAuth();
+  let emailToReset = prompt("Please enter your email:");
+  if (emailToReset) {
+    try {
+      await sendPasswordResetEmail(auth, emailToReset);
+      alert("Password reset email!");
+    } catch (error: any) {
+      alert("Failed to send password reset email: " + error.message);
+    }
+  }
+};
 </script>
 
 <template>
   <div class="login">
-    <RouterLink to="/">
-      <img class="logo" src="../assets/imgs/quizmegpt-logo2.png" />
-    </RouterLink>
+    <header>
+      <RouterLink to="/">
+        <img class="logo" loading="lazy" src="../assets/imgs/quizmegpt-logo2.png" />
+      </RouterLink>
+    </header>
 
-    <!-- <div class="container">
+    <div class="container">
       <div class="content">
         <Login v-if="!registerForm" />
         <Register v-else />
@@ -28,7 +44,7 @@ const registerForm = ref(false);
           </button>
         </nav>
       </div>
-    </div> -->
+    </div>
 
   </div>
 </template>
