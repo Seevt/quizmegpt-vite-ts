@@ -1,94 +1,62 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useModalController } from '../composables/useModal'
 import FloatingBackground from '@/components/FloatingBackground.vue';
 import HomeNav from '@/components/Home Components/HomeNav.vue';
-import HomeModal from '@/components/Home Components/HomeModal.vue';
-import BaseButton from '@/components/BaseButton.vue';
-import VueModal from '@/components/VueModal.vue';
+import QuizInput from '@/components/Home Components/QuizInput.vue';
+import InputActions from '@/components/Home Components/InputActions.vue';
+import QuizAndResults from '@/components/Home Components/QuizAndResults.vue';
+import { useUserStore } from '@/stores/user';
 
-const difficultyLevel = ref("");
-const quizTopic = ref("");
 const quizGenerated = ref(false);
-const loading = ref(false);
-const errorMessage = ref('');
 
-const homeModal = useModalController()
-
-function toggleModal(): void {
-    if (!homeModal.show.value) {
-        homeModal.open();
-    } else {
-        homeModal.close();
-    }
-}
-
-const loggedInUser = ref(false)
-
-function generateQuiz() {
-
-}
+// pinia stores
+const userStore = useUserStore()
 
 </script>
 
 <template>
+    <HomeNav />
     <div class="home-view">
         <FloatingBackground />
-        <HomeNav />
         <RouterLink to="/profile">test</RouterLink>
         <div class="wrapper">
             <div class="container">
-                <h1> {{ loggedInUser ? `Welcome back!, What do you want to be tested about?` : `Let's create a quiz! What do
+                <h1> {{ userStore.isLoggedIn ? `Welcome back!, What do you want to be tested about?` : `Let's create a quiz!
+                    What do
                     you
                     want to be tested about ?` }} </h1>
-                <p v-if="!loggedInUser" class="paragraph">
+                <p v-if="!userStore.isLoggedIn" class="paragraph">
                     Log into your account to review your Quizzes
                     <br />
                     and get points from your
                     matches!
                 </p>
-                <div class="input-wrapper">
-                    <input type="text" v-model="quizTopic" placeholder="Enter any topic...">
-                    <select v-model="difficultyLevel" :disabled="loading" class="select remove-select-styles"
-                        name="dificulty-selector">
-                        <option disabled value="">Select difficulty</option>
-                        <option value="easy">Easy</option>
-                        <option value="medium">Medium</option>
-                        <option value="hard">Hard</option>
-                        <option value="emoji">Emojis</option>
-                    </select>
-                </div>
 
-                <div role="quiz-actions" class="quiz-controls">
-                    <BaseButton color="var(--main-color)" hoverColor="#4eade4" @click="generateQuiz" :disabled="loading"
-                        class="disabledStyle">
-                        Generate Quiz
-                    </BaseButton>
-                    <button class="info-button" @click="toggleModal">?</button>
-                </div>
+                <QuizInput />
+                <InputActions />
 
-                <p class="error-message">{{ errorMessage }}</p>
-                <div v-if="loading" class="loading-spinner"></div>
-                <p v-if="loading" class="waiting-text">
-                    We are generating a quiz for you
-                </p>
             </div>
             <img v-if="quizGenerated" class="illustration" src="@/assets/imgs/home-vector-design.png"
                 alt="illustration vector">
             <img v-else class="illustration" src="@/assets/imgs/results-ill.png" alt="illustration vector">
+
+            <QuizAndResults />
+
+
+            <!-- <p class="error-message">{{ errorMessage }}</p> -->
+            <!-- <div v-if="loading" class="loading-spinner"></div> -->
+            <!-- <p v-if="loading" class="waiting-text">
+                We are generating a quiz for you
+            </p> -->
         </div>
 
         <!-- <QuizComponent ref="quizComponent" v-if="quizGenerated" :questions="quizQuestions" @submit-answers="showResults">
         </QuizComponent> -->
 
-
         <!-- <results-component v-if="resultsShown" :score="score" :total-questions="quizQuestions.length"
       :questions="quizQuestions" :user-answers="userAnswers" :xp-earned="xpEarned" /> -->
 
-        <VueModal teleport="#home_modal" closeOnBackground :styling="{ overflowY: 'auto' }" defaultPosition
-            :controller="homeModal">
-            <HomeModal :showModal="homeModal.show.value" @close="toggleModal" />
-        </VueModal>
+
     </div>
 </template>
 
@@ -152,148 +120,6 @@ h1 {
     justify-items: center;
     margin-bottom: var(--margin-y);
     opacity: 75%;
-}
-
-.quiz-controls {
-    display: flex;
-    width: 100%;
-    justify-content: center;
-    align-items: center;
-    margin-top: var(--margin-y);
-    gap: var(--margin-y);
-}
-
-.info-button {
-    --min-size: 30px;
-    --circle-size: min(5vw, 2rem);
-    border: none;
-    cursor: pointer;
-    display: flex;
-    padding-top: 1px;
-    justify-content: center;
-    align-items: center;
-    background-color: hsl(0, 0%, 41%);
-    color: white;
-    border-radius: var(--input-radius);
-    min-width: var(--min-size);
-    min-height: var(--min-size);
-    height: var(--circle-size);
-    width: var(--circle-size);
-    font-size: clamp(1rem, 1.8vw, 1.2rem);
-}
-
-.info-button:hover {
-    background-color: #4e4e4e;
-}
-
-
-
-.input-wrapper {
-    --input-sizing-y: clamp(0.4rem, 5%, 0.6rem);
-    --b-style: 1px solid hsl(0, 0%, 70%);
-    display: flex;
-    flex-wrap: wrap;
-    font-size: var(--p-size);
-    width: min(100%, 65ch - 5ch);
-    margin-block: calc(var(--margin-y)/2);
-    border-radius: var(--input-radius);
-    padding-block: var(--input-sizing-y);
-    padding-inline: var(--input-sizing-x);
-    border: var(--b-style);
-}
-
-.input-wrapper::after {
-    content: "";
-    width: 0.8em;
-    height: 0.5em;
-    background-color: #4e4e4e;
-    clip-path: polygon(100% 0%, 0 0%, 50% 100%);
-    align-self: center;
-    cursor: pointer;
-
-}
-
-.input-wrapper input {
-    flex: 2;
-    border: none;
-    background: transparent;
-    border-bottom-left-radius: var(--b-radius);
-    border-top-left-radius: var(--b-radius);
-    border-right: var(--b-style);
-}
-
-.input-wrapper input:focus {
-    outline: none;
-}
-
-@media (max-width: 648px) {
-
-    .input-wrapper {
-        justify-content: center;
-        gap: 5px;
-        border-radius: 10px;
-    }
-
-    .input-wrapper::after {
-        display: none;
-    }
-
-    .input-wrapper input {
-        border-right: 0;
-        border-bottom: var(--b-style);
-        text-align: center;
-    }
-
-    .input-wrapper input::placeholder {
-        text-align: center;
-    }
-
-
-    .remove-select-styles {
-        padding: 0;
-    }
-
-}
-
-
-.remove-select-styles {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    background-color: transparent;
-    padding: 0 1.5em 0 1.5em;
-    margin: 0;
-    border: 0;
-    outline: none;
-    font-family: inherit;
-    font-size: inherit;
-    cursor: inherit;
-    line-height: inherit;
-}
-
-.remove-select-styles::-ms-expand {
-    display: none;
-}
-
-.select {
-    font-size: var(--p-size);
-    line-height: 1.1;
-    cursor: pointer;
-    position: relative;
-    color: #4e4e4e;
-    text-align: left;
-}
-
-
-.select:hover {
-    opacity: 0.8;
-}
-
-
-@media (max-width: 648px) {
-    .select {
-        text-align: center;
-    }
 }
 
 
