@@ -2,29 +2,23 @@
 import FloatingBackground from '@/components/FloatingBackground.vue';
 import UserNav from '@/components/Porfile Components/UserNav.vue';
 
-function logOut() {
 
-}
 </script>
 
 <template>
     <div class="my-account">
-        <!-- background -->
-        <RouterLink to="/">
-            pepe
-        </RouterLink>
         <FloatingBackground />
-        <!-- <user-nav @logout="logOut" :username="displayUsername(loggedInUser.email)" /> -->
 
-        <UserNav @logout="logOut" />
-        <h2 class="user-level">{{ userTitle || 'dummy h2' }}</h2>
+        <!-- missing user prop -->
+        <UserNav />
+        <h2 class="user-level">{{ 'dummy h2' }}</h2>
         <div class="user-score">
             <p>Your quiz score is</p>
-            <span class="user-points">{{ userXp || "10" }}</span>
+            <span class="user-points">{{ "10" }}</span>
         </div>
 
         <div>
-            <button class="history-bt" @click="toggleQuizHistory">
+            <!-- <button class="history-bt" @click="toggleQuizHistory">
                 <span class="past-quiz">
                     <p>
                         Past quizzes
@@ -34,9 +28,9 @@ function logOut() {
                         <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" />
                     </svg>
                 </span>
-            </button>
+            </button> -->
 
-            <ol :style="isQuizHistoryOpen ? 'grid-template-rows: 1fr; background-color: #fff; box-shadow: var(--card-shadow);' : ''"
+            <!-- <ol :style="isQuizHistoryOpen ? 'grid-template-rows: 1fr; background-color: #fff; box-shadow: var(--card-shadow);' : ''"
                 class="quiz-history">
                 <div class="quiz-history-transition-container">
                     <li v-for="(     quiz, index     ) in      quizHistoryData     " :key="quiz.id"
@@ -63,7 +57,7 @@ function logOut() {
                     </li>
                 </div>
 
-            </ol>
+            </ol> -->
         </div>
 
     </div>
