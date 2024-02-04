@@ -1,16 +1,23 @@
-<script setup lang="ts">
-import { ref } from 'vue';
+<script setup  lang="ts">
 import FloatingBackground from '@/components/FloatingBackground.vue';
 import HomeNav from '@/components/Home Components/HomeNav.vue';
+import QuizComponent from '@/components/Home Components/QuizComponent.vue';
+import ResultsComponent from '@/components/Home Components/ResultsComponent.vue';
+
 import QuizInput from '@/components/Home Components/QuizInput.vue';
 import InputActions from '@/components/Home Components/InputActions.vue';
-import QuizAndResults from '@/components/Home Components/QuizAndResults.vue';
 import { useUserStore } from '@/stores/user';
+import { useQuizStore, type QuizQuestions } from '@/stores/quiz';
 
-const quizGenerated = ref(false);
+
+
+
+
 
 // pinia stores
-const userStore = useUserStore()
+const userStore = useUserStore();
+const quizStore = useQuizStore();
+
 
 </script>
 
