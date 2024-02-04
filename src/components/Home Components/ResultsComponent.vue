@@ -26,12 +26,12 @@ const props = defineProps({
 })
 
 
-function getAnswerText(question: any, answerValue: number) {
-    const answers = question.options.find((option: any) => option.value === answerValue);
+function getAnswerText(question: QuizQuestions, answerValue: string): string {
+    const answers = question.options.find((option) => option.value === answerValue);
     return answers ? answers.text : "N/A";
 }
 
-function isAnswerCorrect(question: any, userAnswer: any): any {
+function isAnswerCorrect(question: QuizQuestions, userAnswer: string): boolean {
     return userAnswer === question.correctAnswer
 }
 
