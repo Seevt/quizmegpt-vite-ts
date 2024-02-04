@@ -57,7 +57,9 @@ async function downloadPDF() {
     pdf.save("quiz-results.pdf");
 }
 
-
+onUnmounted(() => {
+    quizStore.showResults = false
+})
 </script>
   
 <template>
