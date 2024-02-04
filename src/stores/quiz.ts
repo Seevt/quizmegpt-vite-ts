@@ -1,11 +1,6 @@
 import { defineStore } from "pinia";
 import { ref, watchEffect } from "vue";
 
-// export type Options = {
-//   value: string;
-//   text: string;
-// };
-
 export type QuizQuestions = {
   question: string;
   options: Array<{ value: string; text: string }>;
