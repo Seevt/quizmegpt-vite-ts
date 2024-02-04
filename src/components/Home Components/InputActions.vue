@@ -8,8 +8,8 @@ import { useModalController } from '@/composables/useModal';
 import { useQuizStore } from '@/stores/quiz';
 import { ref, nextTick } from 'vue';
 
-const loading = ref(false);
-const quizGenerated = ref(false)
+const API_URL: string = 'https://api.openai.com/v1/chat/completions';
+
 
 // composables
 const homeModal = useModalController()
@@ -28,7 +28,6 @@ function toggleModal(): void {
         homeModal.close();
     }
 }
-
 
 function buildPrompt(topic: string, difficulty: string): string {
     let prompt: string;
@@ -55,100 +54,89 @@ function buildPrompt(topic: string, difficulty: string): string {
     return prompt
 }
 
-
-
-async function getQuizFromChatGPT(topic: string, difficulty: string) {
+async function getQuizFromChatGPT(topic: string, difficulty: string): Promise<string> {
     const apiKey = import.meta.env.VITE_CHATGPT_API_KEY;
     const prompt = buildPrompt(topic, difficulty);
-
-    try {
-        const response = await axios.post(
-            "https://api.openai.com/v1/chat/completions",
-            {
-                model: "gpt-3.5-turbo",
-                messages: [{ role: "user", content: prompt }],
-                temperature: 0.8,
+    let data: string;
+    const response = await axios.post(
+        API_URL,
+        {
+            model: "gpt-3.5-turbo",
+            messages: [{ role: "user", content: prompt }],
+            temperature: 0.8,
+        },
+        {
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${apiKey}`,
             },
-            {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${apiKey}`,
-                },
-            }
-        );
-        // console.log("API response:", response);
-        return response.data.choices[0].message.content;
-    } catch (error) {
-        console.error("Error generating quiz:", error);
-    }
-}
-
-
-
-function parseQuizText(text: string): QuizQuestions[] {
-    let match;
-    let questions: QuizQuestions[] = [];
-
-    while ((match = regex.exec(text)) !== null) {
-        questions.push({
-            question: match[1].trim(),
-            options: [
-                { text: match[2].trim(), value: "A" },
-                { text: match[3].trim(), value: "B" },
-                { text: match[4].trim(), value: "C" },
-            ],
-            correctAnswer: match[5],
-        });
-    }
-    console.log(questions);
-
-    // return questions.length > 0 ? questions : null;
-    return questions
-}
-
-async function generateQuiz() {
-    // hide results when generating a new quiz
-    // resultsShown.value = false;
-    console.log('is generatequiz loggin');
-
-    loading.value = true;
-
-    const response = await getQuizFromChatGPT(
-        quizStore.topic,
-        quizStore.difficulty,
-    )
-
-    loading.value = false;
-
-    quizStore.apiDataOutput = response;
-
-    if (response) {
-        const questions = parseQuizText(response);
-
-        if (questions !== null) {
-            quizStore.questions = questions;
-            quizGenerated.value = true;
-
-            // errorMessage.value = ""
-            nextTick(() => {
-                window.scrollTo({
-                    top: document.body.scrollHeight,
-                    behavior: "smooth",
-                })
-            })
-        } else {
-            console.error("Failed to parse questions from API response")
-            console.log(
-                "Failed to generate quiz. Please try a different topic."
-            );
         }
+    )
+    if (response.data.choices.length > 0) {
+        data = response.data.choices[0].message.content;
+        return data
+    } else {
+        throw new Error("No quiz questions found");
     }
 }
+
+function parseQuizText(text: string): Promise<QuizQuestions[]> {
+    return new Promise((resolve, reject) => {
+        let questions: QuizQuestions[] = [];
+        let match;
+
+        while ((match = regex.exec(text)) !== null) {
+            questions.push({
+                question: match[1].trim(),
+                options: [
+                    { text: match[2].trim(), value: "A" },
+                    { text: match[3].trim(), value: "B" },
+                    { text: match[4].trim(), value: "C" },
+                ],
+                correctAnswer: match[5],
+            });
+
+            resolve(questions)
+        }
+    })
+    // return questions.length > 0 ? questions : null;
+}
+
+async function generateQuiz(): Promise<void> {
+    // resultsShown.value = false;
+    quizStore.showResults = false;
+    quizStore.score = 0;
+    quizStore.loading = true;
+    let response: string;
+    // quizStore.apiDataOutput = response;
+    try {
+        response = await getQuizFromChatGPT(
+            quizStore.topic,
+            quizStore.difficulty,
+        )
+        const questions = await parseQuizText(response);
+
+        quizStore.questions = questions
+        quizStore.quizGenerated = true;
+        quizStore.loading = false;
+        nextTick(() => {
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: "smooth",
+            })
+        })
+    } catch (error) {
+        console.error("Failed to generate quiz:", error);
+        console.log("Failed to parse questions from API response");
+    }
+}
+
+
 
 </script>
 <template>
     <div role="quiz-actions" class="quiz-controls">
-        <BaseButton color="var(--main-color)" hoverColor="#4eade4" @click="generateQuiz" :disabled="loading"
+        <BaseButton color="var(--main-color)" hoverColor="#4eade4" @click="generateQuiz" :disabled="quizStore.loading"
             class="disabledStyle">
             Generate Quiz
         </BaseButton>
