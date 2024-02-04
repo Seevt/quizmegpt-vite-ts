@@ -13,11 +13,14 @@ export type QuizQuestions = {
 };
 
 export const useQuizStore = defineStore("quiz", () => {
-  const difficulty = ref<string>("");
-  const topic = ref<string>("");
-  const apiDataOutput = ref<string | null>(null);
+  const difficulty = ref("");
+  const topic = ref("");
   const questions = ref<QuizQuestions[]>([]);
   const userAnswers = ref<string[]>([]);
+  const quizGenerated = ref(false);
+  const showResults = ref(false);
+  const loading = ref(false);
+  const score = ref(0);
 
   watchEffect(() => {
     console.log(difficulty.value, questions.value[1]?.question);
@@ -26,8 +29,11 @@ export const useQuizStore = defineStore("quiz", () => {
   return {
     difficulty,
     topic,
-    apiDataOutput,
     questions,
     userAnswers,
+    quizGenerated,
+    loading,
+    score,
+    showResults,
   };
 });
