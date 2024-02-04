@@ -45,15 +45,15 @@ async function downloadPDF() {
 
     if (!element) return
     const canvas = await html2canvas(element!);
-    console.log(canvas);
+    // console.log(canvas);
     const imgData = canvas.toDataURL("image/png");
-    console.log(imgData);
+    // console.log(imgData);
     let pdf = new jsPDF("p", "mm", "a4");
     let imgProps = pdf.getImageProperties(imgData);
     let pdfWidth = pdf.internal.pageSize.getWidth();
     let pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
     pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-    console.log(pdf);
+    // console.log(pdf);
     pdf.save("quiz-results.pdf");
 }
 
