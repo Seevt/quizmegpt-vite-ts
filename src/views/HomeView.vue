@@ -19,13 +19,14 @@ const userStore = useUserStore();
 const quizStore = useQuizStore();
 
 
+
+
 </script>
 
 <template>
     <HomeNav />
     <div class="home-view">
         <FloatingBackground />
-        <RouterLink to="/profile">test</RouterLink>
         <div class="wrapper">
             <div class="container">
                 <h1> {{ userStore.isLoggedIn ? `Welcome back!, What do you want to be tested about?` : `Let's create a quiz!
@@ -52,20 +53,17 @@ const quizStore = useQuizStore();
 
             <ResultsComponent :userAnswers="quizStore.userAnswers" :questions="quizStore.questions" />
         </div>
-            <!-- <p class="error-message">{{ errorMessage }}</p> -->
-            <!-- <div v-if="loading" class="loading-spinner"></div> -->
-            <!-- <p v-if="loading" class="waiting-text">
+        <!-- <p class="error-message">{{ errorMessage }}</p> -->
+        <!-- <div v-if="loading" class="loading-spinner"></div> -->
+        <!-- <p v-if="loading" class="waiting-text">
                 We are generating a quiz for you
             </p> -->
-        </div>
 
         <!-- <QuizComponent ref="quizComponent" v-if="quizGenerated" :questions="quizQuestions" @submit-answers="showResults">
-        </QuizComponent> -->
+            </QuizComponent> -->
 
         <!-- <results-component v-if="resultsShown" :score="score" :total-questions="quizQuestions.length"
-      :questions="quizQuestions" :user-answers="userAnswers" :xp-earned="xpEarned" /> -->
-
-
+                :questions="quizQuestions" :user-answers="userAnswers" :xp-earned="xpEarned" /> -->
     </div>
 </template>
 
