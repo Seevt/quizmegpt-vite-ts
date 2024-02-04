@@ -43,13 +43,15 @@ const quizStore = useQuizStore();
                 <InputActions />
 
             </div>
-            <img v-if="quizGenerated" class="illustration" src="@/assets/imgs/home-vector-design.png"
+            <img v-if="quizStore.quizGenerated" class="illustration" src="@/assets/imgs/home-vector-design.png"
                 alt="illustration vector">
             <img v-else class="illustration" src="@/assets/imgs/results-ill.png" alt="illustration vector">
 
-            <QuizAndResults />
 
+            <QuizComponent :questions="quizStore.questions" />
 
+            <ResultsComponent :userAnswers="quizStore.userAnswers" :questions="quizStore.questions" />
+        </div>
             <!-- <p class="error-message">{{ errorMessage }}</p> -->
             <!-- <div v-if="loading" class="loading-spinner"></div> -->
             <!-- <p v-if="loading" class="waiting-text">
