@@ -3,15 +3,12 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import BaseButton from "@/components/BaseButton.vue";
 import type { PropType } from "vue";
-import { ref } from "vue";
-import type { QuizQuestions } from "@/stores/quiz";
+import { ref, onUnmounted } from "vue";
+import { useQuizStore, type QuizQuestions } from "@/stores/quiz";
 
 
 const props = defineProps({
     score: {
-        type: Number,
-    },
-    totalQuestions: {
         type: Number,
     },
     questions: {
@@ -19,12 +16,14 @@ const props = defineProps({
     },
     userAnswers: {
         type: Array as PropType<string[]>,
+        required: true,
     },
     expEarned: {
         type: Number,
     }
 })
 
+const quizStore = useQuizStore()
 
 function getAnswerText(question: QuizQuestions, answerValue: string): string {
     const answers = question.options.find((option) => option.value === answerValue);
