@@ -63,17 +63,17 @@ onUnmounted(() => {
 </script>
   
 <template>
-    <div class="results">
+    <div v-if="quizStore.showResults" class="results">
 
         <div class="score">
             <p>Your results</p>
-            <span class="total-score">{{ score }}/{{ totalQuestions }}</span>
+            <span class="total-score">{{ quizStore.score }}/{{ props.questions?.length }}</span>
             <p>You earned {{ props.expEarned }} points</p>
         </div>
 
         <ol class="answers" ref="results">
             <li v-for="(question, index) in props.questions" :key="index">
-                <h3>{{ question }}</h3>
+                <h3>{{ question.question }}</h3>
                 <p>Your answers: {{ getAnswerText(question, props.userAnswers[index]) }}</p>
                 <span role="alert" v-if="isAnswerCorrect(question, props.userAnswers[index])" class="correct-answers">
                     Correct!
