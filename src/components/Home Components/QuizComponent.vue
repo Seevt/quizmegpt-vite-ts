@@ -1,5 +1,88 @@
+<script setup lang="ts">
+import { useQuizStore, type QuizQuestions } from "@/stores/quiz";
+import BaseButton from "../BaseButton.vue";
+import { useUserStore } from "@/stores/user";
+import { ref, type PropType } from "vue";
+
+
+
+const props = defineProps({
+    questions: {
+        type: Array as PropType<QuizQuestions[]>,
+        required: true
+    }
+})
+
+const currentQuestionIndex = ref(0);
+
+const userStore = useUserStore()
+const quizStore = useQuizStore()
+
+
+// async function showResults(payload: any) {
+
+//     // score.value = payload.score;
+//     // this variable is created twice so that u send it via ref template to use it in a userAnswer varaible 
+//     // in parent, 
+//     // but this can be done exposin the variable to parent via ref and just sending it to Quiz Results component
+//     // userAnswers.value = quizComponent.value.userAnswers;
+
+//     // this booleans can be changed to suspense elements so that it has a x10 dx/ux
+//     // resultsShown.value = true;
+//     // quizGenerated.value = false;
+
+
+//     // await updateUserXp(payload.xpEarned)
+//     // await saveQuizToHistory({ ...payload })
+
+//     window.scrollBy({
+//         top: window.scrollY - 40,
+//         behavior: "smooth",
+//     })
+// }
+
+function selectAnswer(answer: string) {
+    quizStore.userAnswers[currentQuestionIndex.value] = answer
+}
+
+function nextQuestion() {
+    if (quizStore.userAnswers[currentQuestionIndex.value] !== null) {
+        currentQuestionIndex.value = currentQuestionIndex.value + 1;
+    }
+}
+
+async function submitAnswers() {
+    let score = 0;
+    let expEarned;
+    for (let i = 0; i < props.questions.length; i++) {
+        if (quizStore.userAnswers[i] === props.questions[i].correctAnswer) {
+            score++;
+        }
+    }
+    quizStore.score = score
+    expEarned = score * 10;
+
+    quizStore.quizGenerated = false;
+    quizStore.showResults = true
+    await saveQuizHistory({ score, questions: props.questions })
+    // someother await
+    // emit if needed
+
+
+}
+
+async function saveQuizHistory(quizData: any) {
+    // .... something firebase
+    // store loggedInUser here uuid used.
+}
+
+
+
+
+</script>
+
 <template>
-    <div class="quiz-component">
+    <div v-if="quizStore.quizGenerated && !quizStore.loading" class="quiz-component">
         <div class="question">
             <b role="question-number" class="question-number">
                 Question {{ currentQuestionIndex + 1 }} / {{ props.questions?.length }}
@@ -11,7 +94,7 @@
         <ul v-if="currentQuestionIndex < props.questions?.length" class="answer-options">
             <li class="option" v-for="(option, optionIndex) in questions[currentQuestionIndex]?.options" :key="optionIndex"
                 :class="{
-                    selected: userAnswers[currentQuestionIndex] === option.value,
+                    selected: quizStore.userAnswers[currentQuestionIndex] === option.value,
                 }" @click="selectAnswer(option.value)">
                 {{
                     option.text
@@ -25,83 +108,34 @@
         <BaseButton class="quiz-button" @click="submitAnswers" v-else>Submit</BaseButton>
 
     </div>
+    <p role="loader" class="waiting-text" v-else-if="quizStore.loading && !quizStore.quizGenerated">We are generating a quiz
+        for you</p>
 </template>
   
 //   import { addDoc, collection } from "firebase/firestore";
 //   import { db } from "@/firebase.js";
-<script setup lang="ts">
-import type { QuizQuestions } from "@/stores/quiz";
-import BaseButton from "../BaseButton.vue";
-import { useUserStore } from "@/stores/user";
-import { ref, type PropType } from "vue";
 
-
-const props = defineProps({
-    questions: {
-        type: Object as PropType<QuizQuestions[]>,
-        required: true,
-    }
-})
-
-const currentQuestionIndex = ref(0);
-const userAnswers = ref<string[]>(Array(props.questions?.length).fill(null))
-const score = ref(0);
-
-const userStore = useUserStore()
-
-
-async function showResults(payload: any) {
-
-    score.value = payload.score;
-    // this variable is created twice so that u send it via ref template to use it in a userAnswer varaible 
-    // in parent, 
-    // but this can be done exposin the variable to parent via ref and just sending it to Quiz Results component
-    // userAnswers.value = quizComponent.value.userAnswers;
-
-    // this booleans can be changed to suspense elements so that it has a x10 dx/ux
-    // resultsShown.value = true;
-    // quizGenerated.value = false;
-
-
-    // await updateUserXp(payload.xpEarned)
-    // await saveQuizToHistory({ ...payload })
-
-    window.scrollBy({
-        top: window.scrollY - 40,
-        behavior: "smooth",
-    })
-}
-
-function selectAnswer(answer: string) {
-    userAnswers.value[currentQuestionIndex.value] = answer
-}
-
-function nextQuestion() {
-    if (userAnswers.value[currentQuestionIndex.value] !== null) {
-        currentQuestionIndex.value = currentQuestionIndex.value + 1;
-    }
-}
-
-function submitAnswers() {
-    let score = 0;
-    let expEarned;
-    for (let i = 0; i < props.questions.length; i++) {
-        if (userAnswers.value[i] === props.questions[i].correctAnswer) {
-            score++;
-        }
-    }
-    expEarned = score * 10;
-    saveQuizHistory({ score, questions: props.questions })
-    // emit if needed
-}
-
-function saveQuizHistory(quizData: any) {
-    // .... something firebase
-    // store loggedInUser here uuid used.
-}
-</script>
   
 <style scoped>
+@keyframes bounce {
+
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+        transform: translateY(0);
+    }
+
+    40% {
+        transform: translateY(-10px);
+    }
+
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
 .quiz-component {
     display: flex;
     flex-direction: column;
@@ -167,5 +201,11 @@ function saveQuizHistory(quizData: any) {
 .quiz-button {
     margin-block: var(--margin-y);
     margin-inline: auto;
+}
+
+.waiting-text {
+    animation: bounce 1s ease infinite;
+    margin-top: var(--margin-y);
+    align-self: center;
 }
 </style>
