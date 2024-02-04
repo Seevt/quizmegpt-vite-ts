@@ -61,25 +61,6 @@ const userStore = useUserStore()
 </template>
 
 <style scoped>
-@keyframes bounce {
-
-    0%,
-    20%,
-    50%,
-    80%,
-    100% {
-        transform: translateY(0);
-    }
-
-    40% {
-        transform: translateY(-10px);
-    }
-
-    60% {
-        transform: translateY(-5px);
-    }
-}
-
 .home-view {
     overflow-x: hidden;
     display: flex;
@@ -139,10 +120,7 @@ h1 {
 }
 
 
-.waiting-text {
-    animation: bounce 1s ease infinite;
-    margin-top: var(--margin-y);
-}
+
 
 .output-container {
     padding: 20px;
