@@ -1,7 +1,25 @@
 <script setup lang="ts">
 import FloatingBackground from '@/components/FloatingBackground.vue';
 import UserNav from '@/components/Porfile Components/UserNav.vue';
+import { useUserStore } from '@/stores/user';
+import { getAuth, type Auth } from 'firebase/auth';
+import { nextTick, onMounted } from 'vue';
 
+let auth: Auth;
+auth = getAuth()
+const userStore = useUserStore();
+
+
+
+
+onMounted(async () => {
+    nextTick(
+        async () => {
+            await userStore.fetchUserData(auth.currentUser!.uid)
+
+        }
+    )
+})
 
 </script>
 
@@ -10,11 +28,13 @@ import UserNav from '@/components/Porfile Components/UserNav.vue';
         <FloatingBackground />
 
         <!-- missing user prop -->
-        <UserNav />
-        <h2 class="user-level">{{ 'dummy h2' }}</h2>
+        <UserNav :username="userStore.user?.email" />
+
+
+        <h2 class="user-level">{{ userStore.user?.title }}</h2>
         <div class="user-score">
             <p>Your quiz score is</p>
-            <span class="user-points">{{ "10" }}</span>
+            <span class="user-points">{{ userStore.user?.experience }}</span>
         </div>
 
         <div>
