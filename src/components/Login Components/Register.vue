@@ -1,9 +1,15 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { getAuth, createUserWithEmailAndPassword, type UserCredential, type Auth } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, type Auth } from "firebase/auth";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import { useRouter } from 'vue-router';
+import { db } from '@/main'
+import { useUserStore } from '@/stores/user';
+
+
 
 const router = useRouter()
+const userStore = useUserStore()
 
 const register_form = ref({
     email: "",
@@ -11,20 +17,43 @@ const register_form = ref({
     confirmPassword: "",
 })
 
-function register(): void {
+async function checkUserAndCreateDocument(user_id: string) {
     const auth: Auth = getAuth();
-    createUserWithEmailAndPassword(
-        auth,
-        register_form.value.email, register_form.value.password
-    )
-        .then((data: UserCredential) => {
-            console.log('successful register');
-            router.push('/profile')
+    const userDocReference = doc(db, 'users', user_id);
+    const documentSnapshot = await getDoc(userDocReference);
+    // const quizesDocReference = doc(db, 'quizes', user_id);
+    if (documentSnapshot.exists()) return
+
+    if (auth.currentUser) {
+        await setDoc(userDocReference, {
+            uid: user_id,
+            email: auth.currentUser?.email,
+            experience: 0,
+            title: "Newbie Quizzer"
         })
-        .catch((error: any) => {
-            console.log(error.code);
-            alert(error.message)
-        })
+
+    }
+}
+
+async function register(): Promise<void> {
+    const auth: Auth = getAuth();
+    console.log(auth);
+
+    try {
+        await createUserWithEmailAndPassword(
+            auth,
+            register_form.value.email, register_form.value.password
+        )
+
+        await checkUserAndCreateDocument(auth.currentUser?.uid!)
+        router.push('/profile')
+
+    } catch (error: any) {
+        console.log('Error while registering', error.code);
+
+    }
+
+
 }
 </script>
 
