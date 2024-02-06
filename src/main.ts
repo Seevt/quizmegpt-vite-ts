@@ -3,6 +3,7 @@ import "./assets/main.css";
 import { createApp } from "vue";
 import { createPinia } from "pinia";
 import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
 
 import App from "./App.vue";
 import router from "./router";
@@ -17,11 +18,13 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-initializeApp(firebaseConfig);
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp);
 
 const app = createApp(App);
-
 app.use(createPinia());
 app.use(router);
 
 app.mount("#app");
+
+export { db };
