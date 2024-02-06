@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { ref, watchEffect } from "vue";
+import { ref } from "vue";
 
 export type QuizQuestions = {
   question: string;
@@ -14,12 +14,9 @@ export const useQuizStore = defineStore("quiz", () => {
   const userAnswers = ref<string[]>([]);
   const quizGenerated = ref(false);
   const showResults = ref(false);
-  const loading = ref(false);
   const score = ref(0);
-
-  watchEffect(() => {
-    console.log(difficulty.value, questions.value[1]?.question);
-  });
+  const loading = ref(false);
+  const questionIndex = ref(0);
 
   return {
     difficulty,
@@ -30,5 +27,6 @@ export const useQuizStore = defineStore("quiz", () => {
     loading,
     score,
     showResults,
+    questionIndex,
   };
 });
