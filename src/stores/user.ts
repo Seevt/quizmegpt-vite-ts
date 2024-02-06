@@ -1,41 +1,19 @@
 import { defineStore } from "pinia";
-import { watchEffect, ref } from "vue";
-import type { QuizQuestions } from "@/stores/quiz";
+import { ref } from "vue";
 import {
   doc,
   getDoc,
   type DocumentData,
   updateDoc,
   DocumentReference,
+  arrayUnion,
 } from "firebase/firestore";
 import { db } from "@/main";
-
-type User = {
-  uid: string;
-  email: string | null;
-  title: string;
-  experience: number;
-  // quizes: QuizQuestions[];
-};
+import { type QuizQuestions } from "@/stores/quiz";
 
 export const useUserStore = defineStore("user", () => {
   const isLoggedIn = ref(false);
-
   const user = ref<DocumentData>();
-
-  async function updateUserData(user_id: string) {
-    const userDocReference = doc(db, "users", user_id);
-    const documentSnapshot = await getDoc(userDocReference);
-
-    if (!documentSnapshot.exists()) return;
-
-    console.log(documentSnapshot.data());
-
-    // user.value.uid = documentSnapshot.data().uid;
-    // user.value.email = documentSnapshot.data().email;
-    // user.value.title = documentSnapshot.data().title;
-    // user.value.experience = documentSnapshot.data().experience;
-  }
 
   async function fetchUserData(user_id: string) {
     try {
@@ -115,5 +93,5 @@ export const useUserStore = defineStore("user", () => {
   async function updateExp(docReference: DocumentReference, exp: number) {
     await updateDoc(docReference, { experience: exp });
   }
-  return { user, isLoggedIn, fetchUserData, updateFirebaseUserData };
+  return { user, isLoggedIn, fetchUserData, updateFirebaseUserData, saveQuiz };
 });
