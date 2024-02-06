@@ -20,9 +20,13 @@ const register_form = ref({
 async function checkUserAndCreateDocument(user_id: string) {
     const auth: Auth = getAuth();
     const userDocReference = doc(db, 'users', user_id);
-    const documentSnapshot = await getDoc(userDocReference);
-    // const quizesDocReference = doc(db, 'quizes', user_id);
-    if (documentSnapshot.exists()) return
+    const userDocumentSnapshot = await getDoc(userDocReference);
+    const quizesDocReference = doc(db, 'quizes', user_id);
+    const quizesDocumentSnapshot = await getDoc(quizesDocReference);
+
+    if (userDocumentSnapshot.exists()
+        || quizesDocumentSnapshot.exists()) return
+
 
     if (auth.currentUser) {
         await setDoc(userDocReference, {
@@ -32,7 +36,13 @@ async function checkUserAndCreateDocument(user_id: string) {
             title: "Newbie Quizzer"
         })
 
+        await setDoc(quizesDocReference, {
+            uid: user_id,
+            quizes: [],
+        })
     }
+
+
 }
 
 async function register(): Promise<void> {
