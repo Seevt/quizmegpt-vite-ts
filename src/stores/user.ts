@@ -107,10 +107,8 @@ export const useUserStore = defineStore("user", () => {
     await updateDoc(docReference, { title: newTitle });
   }
 
-  async function updateExp(docSnapshot: any, exp: number) {
-    let userExp: DocumentData = user.value?.experience;
-    userExp = user.value?.experience + exp;
-    await updateDoc(docSnapshot, { experience: userExp });
+  async function updateExp(docReference: DocumentReference, exp: number) {
+    await updateDoc(docReference, { experience: exp });
   }
   return { user, isLoggedIn, fetchUserData, updateFirebaseUserData };
 });
