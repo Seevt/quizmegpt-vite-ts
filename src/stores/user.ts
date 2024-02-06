@@ -62,8 +62,32 @@ export const useUserStore = defineStore("user", () => {
 
     let newExp: number = currentExp + scoreExp;
 
-    await updateTitle(documentSnapshot, newExp);
-    await updateExp(documentSnapshot, newExp);
+  async function saveQuiz(
+    user_id: string,
+    questions: QuizQuestions[],
+    score: number
+  ) {
+    const quizesDocReference = doc(db, "quizes", user_id);
+
+    const quizData = questions.map((question) => {
+      let correctAnswer = question.options.find(
+        (option) => option.value === question.correctAnswer
+      )?.text;
+
+      return {
+        question: question.question,
+        correctAnswer: correctAnswer,
+      };
+    });
+
+    const quizObject = {
+      score: `${score}/${questions.length}`,
+      questions: quizData,
+    };
+
+    console.log(quizObject, "quiz object");
+
+    await updateDoc(quizesDocReference, { quizes: arrayUnion(quizObject) });
   }
 
   async function updateTitle(docSnapshot: any, currentExp: number) {
