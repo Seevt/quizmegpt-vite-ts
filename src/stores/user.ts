@@ -90,16 +90,21 @@ export const useUserStore = defineStore("user", () => {
     await updateDoc(quizesDocReference, { quizes: arrayUnion(quizObject) });
   }
 
-  async function updateTitle(docSnapshot: any, currentExp: number) {
+  async function updateTitle(
+    docReference: DocumentReference,
+    updatedExp: number
+  ) {
     let newTitle: string = "";
 
-    if (currentExp >= 250) {
-      newTitle = "PRO Quizzer";
-    } else if (currentExp >= 100) {
+    if (updatedExp < 100) return;
+
+    if (updatedExp >= 100) {
       newTitle = "Amateur Quizzer";
+    } else if (updatedExp >= 250) {
+      newTitle = "PRO Quizzer";
     }
 
-    await updateDoc(docSnapshot, { title: newTitle });
+    await updateDoc(docReference, { title: newTitle });
   }
 
   async function updateExp(docSnapshot: any, exp: number) {
