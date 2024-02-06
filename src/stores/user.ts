@@ -58,9 +58,14 @@ export const useUserStore = defineStore("user", () => {
     const userDocReference = doc(db, "users", user_id);
     const documentSnapshot = await getDoc(userDocReference);
 
-    const currentExp: number = user.value?.experience;
+    const userData = documentSnapshot.data();
+    let currentExp: number = userData?.experience;
 
-    let newExp: number = currentExp + scoreExp;
+    let updatedExp: number = currentExp + scoreExp;
+
+    await updateTitle(userDocReference, updatedExp);
+    await updateExp(userDocReference, updatedExp);
+  }
 
   async function saveQuiz(
     user_id: string,
