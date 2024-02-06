@@ -9,6 +9,8 @@ import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 import { getAuth, signOut, type Auth } from 'firebase/auth';
 
+
+
 const props = defineProps({
     username: {
         type: String,
@@ -16,6 +18,8 @@ const props = defineProps({
     },
 
 })
+
+
 
 const windowSize = useInnerWidth();
 const userModal = useModalController()
@@ -57,7 +61,7 @@ function toggleModal() {
                 </button>
                 <div class="welcome-message-wrapper">
                     <h2>Welcome Back</h2>
-                    <p>{{ props.username }}</p>
+                    <p>{{ props.username.substring(0, props.username.indexOf('@')) }}</p>
                 </div>
                 <template v-if="windowSize.innerWidth.value < 1024">
                     <VueModal customTransition closeOnBackground :controller="userModal"
