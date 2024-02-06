@@ -99,16 +99,14 @@ function parseQuizText(text: string): Promise<QuizQuestions[]> {
             resolve(questions)
         }
     })
-    // return questions.length > 0 ? questions : null;
 }
 
 async function generateQuiz(): Promise<void> {
-    // resultsShown.value = false;
     quizStore.showResults = false;
     quizStore.score = 0;
+    quizStore.questionIndex = 0;
     quizStore.loading = true;
     let response: string;
-    // quizStore.apiDataOutput = response;
     try {
         response = await getQuizFromChatGPT(
             quizStore.topic,
