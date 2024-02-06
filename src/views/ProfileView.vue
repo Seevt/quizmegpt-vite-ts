@@ -5,18 +5,17 @@ import { useUserStore } from '@/stores/user';
 import { getAuth, type Auth } from 'firebase/auth';
 import { nextTick, onMounted } from 'vue';
 
-let auth: Auth;
-auth = getAuth()
+
+// firebase user data
+let auth: Auth = getAuth()
+
+// global store
 const userStore = useUserStore();
-
-
-
 
 onMounted(async () => {
     nextTick(
         async () => {
             await userStore.fetchUserData(auth.currentUser!.uid)
-
         }
     )
 })
@@ -27,16 +26,13 @@ onMounted(async () => {
     <div class="my-account">
         <FloatingBackground />
 
-        <!-- missing user prop -->
         <UserNav :username="userStore.user?.email" />
-
 
         <h2 class="user-level">{{ userStore.user?.title }}</h2>
         <div class="user-score">
             <p>Your quiz score is</p>
             <span class="user-points">{{ userStore.user?.experience }}</span>
         </div>
-
         <div>
             <!-- <button class="history-bt" @click="toggleQuizHistory">
                 <span class="past-quiz">
@@ -81,9 +77,6 @@ onMounted(async () => {
         </div>
 
     </div>
-    <!-- <div v-else>
-        <div class="loading-spinner"></div>
-    </div> -->
 </template>
 
 <style scoped>
