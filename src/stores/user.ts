@@ -7,6 +7,7 @@ import {
   updateDoc,
   DocumentReference,
   arrayUnion,
+  arrayRemove,
 } from "firebase/firestore";
 import { db } from "@/main";
 import { type QuizQuestions } from "@/stores/quiz";
@@ -23,10 +24,8 @@ export const useUserStore = defineStore("user", () => {
 
       if (documentSnapshot.exists()) {
         let userData = documentSnapshot.data();
-        console.log(userData);
 
         user.value = userData;
-        console.log(user.value);
       }
     } catch (error: any) {
       console.log("Error fetching user data", error.code);
@@ -90,9 +89,7 @@ export const useUserStore = defineStore("user", () => {
       score: `${score}/${questions.length}`,
       questions: quizData,
     };
-
-    console.log(quizObject, "quiz object");
-
+    // console.log(quizObject, "quiz object");
     await updateDoc(quizesDocReference, { quizes: arrayUnion(quizObject) });
   }
 
@@ -126,5 +123,14 @@ export const useUserStore = defineStore("user", () => {
   async function updateExp(docReference: DocumentReference, exp: number) {
     await updateDoc(docReference, { experience: exp });
   }
-  return { user, isLoggedIn, fetchUserData, updateFirebaseUserData, saveQuiz };
+  return {
+    user,
+    isLoggedIn,
+    fetchUserData,
+    updateFirebaseUserData,
+    saveQuiz,
+    fetchUserQuizesData,
+    deleteQuiz,
+    quizHistory,
+  };
 });
