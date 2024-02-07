@@ -81,10 +81,10 @@ export const useUserStore = defineStore("user", () => {
 
     if (updatedExp < 100) return;
 
-    if (updatedExp >= 100) {
+    if (updatedExp >= 250) {
+      newTitle = "Pro Quizzer";
+    } else {
       newTitle = "Amateur Quizzer";
-    } else if (updatedExp >= 250) {
-      newTitle = "PRO Quizzer";
     }
 
     await updateDoc(docReference, { title: newTitle });
