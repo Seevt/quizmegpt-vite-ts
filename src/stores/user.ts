@@ -73,6 +73,16 @@ export const useUserStore = defineStore("user", () => {
     await updateDoc(quizesDocReference, { quizes: arrayUnion(quizObject) });
   }
 
+  async function deleteQuiz(user_id: string, index: number) {
+    const quizesDocReference = doc(db, "quizes", user_id);
+    const docSnapshot = await getDoc(quizesDocReference);
+    const quizes = docSnapshot.data()?.quizes;
+
+    await updateDoc(quizesDocReference, { quizes: arrayRemove(quizes[index]) });
+
+    quizHistory.value?.quizes.splice(index, 1);
+  }
+
   async function updateTitle(
     docReference: DocumentReference,
     updatedExp: number
