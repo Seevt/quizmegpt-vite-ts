@@ -32,6 +32,28 @@ export const useUserStore = defineStore("user", () => {
     }
   }
 
+  async function fetchUserQuizesData(user_id: string): Promise<
+    | {
+        userQuizData: DocumentData;
+      }
+    | undefined
+  > {
+    try {
+      const quizesDocReference = doc(db, "quizes", user_id);
+      const documentSnapshot = await getDoc(quizesDocReference);
+
+      if (documentSnapshot.exists()) {
+        let userQuizData = documentSnapshot.data();
+
+        return {
+          userQuizData,
+        };
+      }
+    } catch (error: any) {
+      console.log("Error fetching quizes", error.code);
+    }
+  }
+
   async function updateFirebaseUserData(user_id: string, scoreExp: number) {
     const userDocReference = doc(db, "users", user_id);
     const documentSnapshot = await getDoc(userDocReference);
