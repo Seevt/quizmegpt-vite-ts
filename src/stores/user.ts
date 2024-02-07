@@ -14,6 +14,7 @@ import { type QuizQuestions } from "@/stores/quiz";
 export const useUserStore = defineStore("user", () => {
   const isLoggedIn = ref(false);
   const user = ref<DocumentData>();
+  const quizHistory = ref<DocumentData>();
 
   async function fetchUserData(user_id: string) {
     try {
