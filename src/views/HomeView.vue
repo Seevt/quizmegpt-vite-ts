@@ -7,7 +7,7 @@ import ResultsComponent from '@/components/Home Components/ResultsComponent.vue'
 import QuizInput from '@/components/Home Components/QuizInput.vue';
 import InputActions from '@/components/Home Components/InputActions.vue';
 import { useUserStore } from '@/stores/user';
-import { useQuizStore, type QuizQuestions } from '@/stores/quiz';
+import { useQuizStore, } from '@/stores/quiz';
 
 
 
@@ -54,16 +54,6 @@ const quizStore = useQuizStore();
             <ResultsComponent :userAnswers="quizStore.userAnswers" :questions="quizStore.questions" />
         </div>
         <!-- <p class="error-message">{{ errorMessage }}</p> -->
-        <!-- <div v-if="loading" class="loading-spinner"></div> -->
-        <!-- <p v-if="loading" class="waiting-text">
-                We are generating a quiz for you
-            </p> -->
-
-        <!-- <QuizComponent ref="quizComponent" v-if="quizGenerated" :questions="quizQuestions" @submit-answers="showResults">
-            </QuizComponent> -->
-
-        <!-- <results-component v-if="resultsShown" :score="score" :total-questions="quizQuestions.length"
-                :questions="quizQuestions" :user-answers="userAnswers" :xp-earned="xpEarned" /> -->
     </div>
 </template>
 
