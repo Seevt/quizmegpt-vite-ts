@@ -96,7 +96,7 @@ svg {
 html {
   font-family: var(--roboto);
   font-size: 18px;
-  color: var(--text-color);
+  color: var(--text-color) ;
 }
 
 h1 {
