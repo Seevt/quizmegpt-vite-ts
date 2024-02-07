@@ -2,7 +2,7 @@
 import { useQuizStore, type QuizQuestions } from "@/stores/quiz";
 import BaseButton from "../BaseButton.vue";
 import { useUserStore } from "@/stores/user";
-import { ref, type PropType } from "vue";
+import { type PropType } from "vue";
 import { getAuth, type Auth } from "firebase/auth";
 
 
@@ -13,9 +13,6 @@ const props = defineProps({
         required: true
     }
 })
-
-// reactive vars`
-// const currentQuestionIndex = ref(0);
 
 // firebase user data
 let auth: Auth = getAuth()
