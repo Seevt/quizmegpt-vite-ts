@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRouter } from 'vue-router';
-import { getAuth, signInWithEmailAndPassword, type Auth, type UserCredential } from "firebase/auth";
-import { FirebaseError } from "firebase/app";
+import { getAuth, signInWithEmailAndPassword, type Auth } from "firebase/auth";
 import * as z from 'zod';
 
 const router = useRouter();
@@ -17,41 +16,40 @@ const login_form = ref({
     password: "",
 })
 
-const emailError = ref<string | null>(null);
-const passwordError = ref<string | null>(null);
+const errors = ref<{ email: string | null, password: string | null }>({
+    email: null,
+    password: null,
+});
 const firebaseError = ref<string | null>(null)
-
 
 function validateField(fieldName: keyof typeof formSchema.shape) {
     try {
+        console.log(fieldName);
         formSchema.shape[fieldName].parse(login_form.value[fieldName]);
-        (fieldName === 'email' ? emailError : passwordError).value = null
+        errors.value[fieldName] = null;
     } catch (error: any) {
-        (fieldName === 'email' ? emailError : passwordError).value = error.issues[0].message
+        errors.value[fieldName] = error.issues[0].message
         console.log(error.issues);
     }
 }
 
+
+
 function login(): void {
     const auth: Auth = getAuth()
-
-    if (emailError.value || passwordError.value) return
+    firebaseError.value = null
+    if (errors.value !== null) return
 
     signInWithEmailAndPassword(
         auth,
         login_form.value.email, login_form.value.password
     )
-        .then((data: UserCredential) => {
+        .then(() => {
             router.push('/profile')
         })
         .catch((error: any) => {
-
-            if (error instanceof FirebaseError) {
-                firebaseError.value = error.code;
-            }
             firebaseError.value = "The username or password you entered is incorrect. Please try again"
             console.log(error.code);
-            // alert(error.message)
         })
 }
 
@@ -61,17 +59,18 @@ function login(): void {
     <h1>Sign In</h1>
     <form @submit.prevent="login" class="form">
         <label for="email">Email</label>
-        <input @blur="validateField('email')" name="email" :class="{ 'active-error': emailError }"
+        <input @blur="validateField('email')" name="email" :class="{ 'active-error': errors.email }"
             placeholder="Enter your email" id="email" v-model="login_form.email" />
 
-        <span role="error message" v-if="emailError" class="zod-error">{{ emailError }}</span>
+        <span role="error message" v-if="errors.email" class="zod-error">{{ errors.email }}</span>
 
 
         <label for="password">Password</label>
-        <input @blur="validateField('password')" name="password" :class="{ 'active-error': passwordError }" type="password"
-            placeholder="Enter your password" id="password" v-model="login_form.password" />
+        <input @input="validateField('password')" @blur="validateField('password')" name="password"
+            :class="{ 'active-error': errors.password }" type="password" placeholder="Enter your password" id="password"
+            v-model="login_form.password" />
 
-        <span role="error message" v-if="passwordError" class="zod-error">{{ passwordError }}</span>
+        <span role="error message" v-if="errors.password" class="zod-error">{{ errors.password }}</span>
 
         <button class="submit-button" type="submit">
             <p>Continue</p>
@@ -133,7 +132,6 @@ label {
     font-size: calc(var(--p-size)/1.25);
     color: var(--error-color);
     font-weight: 500;
-    /* max-width: 350px; */
 }
 
 .firebase-error span {
@@ -150,6 +148,9 @@ input {
     font-size: medium;
     border: 1px solid hsl(0, 0%, 86%);
 }
+
+
+
 
 input.active-error {
     border: 1px solid var(--error-color);
