@@ -16,9 +16,9 @@
     "html2canvas": "^1.4.1",
     "jspdf": "^2.5.1",
     "pinia": "^2.1.7",
-    "vee-validate": "^4.12.4",
     "vue": "^3.3.11",
-    "vue-router": "^4.2.5"
+    "vue-router": "^4.2.5",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@tsconfig/node18": "^18.2.2",
