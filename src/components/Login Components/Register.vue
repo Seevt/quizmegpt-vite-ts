@@ -76,9 +76,11 @@ async function register(): Promise<void> {
     const auth: Auth = getAuth();
     firebaseError.value = null
 
-    if (errors.value.email !== null || errors.value.password !== null || errors.value.confirmPassword !== null) return
 
     try {
+
+
+
         await createUserWithEmailAndPassword(
             auth,
             register_form.value.email, register_form.value.password

@@ -38,7 +38,6 @@ function validateField(fieldName: keyof typeof formSchema.shape) {
 function login(): void {
     const auth: Auth = getAuth()
     firebaseError.value = null
-    if (errors.value !== null) return
 
     signInWithEmailAndPassword(
         auth,
