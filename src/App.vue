@@ -9,7 +9,6 @@ const userStore = useUserStore()
 let auth: Auth;
 onMounted(() => {
   auth = getAuth();
-  // console.log(auth, 'auth var from app.vue', 'this and user inside the callback are the same');
 
   onAuthStateChanged(
     auth,
@@ -29,11 +28,11 @@ onMounted(() => {
 <template>
   <main class="app">
     <RouterView v-slot="{ Component }">
-      <!-- <transition name="page-fade" mode="out-in"> -->
-      <!-- <div class="app" :key="$route.path"> -->
-      <component :is="Component" />
-      <!-- </div> -->
-      <!-- </transition> -->
+      <Transition name="page-fade" mode="out-in">
+        <div class="app" :key="$route.path">
+          <component :is="Component" />
+        </div>
+      </Transition>
       <Footer />
     </RouterView>
   </main>
