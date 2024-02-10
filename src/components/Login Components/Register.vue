@@ -4,18 +4,49 @@ import { getAuth, createUserWithEmailAndPassword, type Auth } from "firebase/aut
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { useRouter } from 'vue-router';
 import { db } from '@/main'
-import { useUserStore } from '@/stores/user';
+import * as z from 'zod';
 
 
 
 const router = useRouter()
-const userStore = useUserStore()
 
 const register_form = ref({
     email: "",
     password: "",
     confirmPassword: "",
 })
+
+const formSchema = z.object({
+    email: z.string().min(1, { message: "You must specify an email" }).email({ message: "Please enter a valid email address" }),
+    password: z.string().min(1, { message: "You must enter a password" }).min(6, { message: "Your password must have at least 6 characters" }),
+    confirmPassword: z.string()
+        .min(1, { message: "You must confirm your password" })
+        .refine((value) => value === register_form.value.password, { path: ["confirmPassword"], message: "Your passwords don't match" })
+})
+
+
+
+const firebaseError = ref<string | null>(null)
+const errors = ref<{ email: string | null, password: string | null, confirmPassword: string | null }>({
+    email: null,
+    password: null,
+    confirmPassword: null,
+});
+
+
+function validateField(fieldName: keyof typeof formSchema.shape) {
+    try {
+
+        formSchema.shape[fieldName].parse(register_form.value[fieldName]);
+        errors.value[fieldName] = null;
+
+    } catch (error: any) {
+        errors.value[fieldName] = error.issues[0].message
+    }
+}
+
+
+
 
 async function checkUserAndCreateDocument(user_id: string) {
     const auth: Auth = getAuth();
@@ -27,7 +58,6 @@ async function checkUserAndCreateDocument(user_id: string) {
     if (userDocumentSnapshot.exists()
         || quizesDocumentSnapshot.exists()) return
 
-
     if (auth.currentUser) {
         await setDoc(userDocReference, {
             uid: user_id,
@@ -35,19 +65,18 @@ async function checkUserAndCreateDocument(user_id: string) {
             experience: 0,
             title: "Newbie Quizzer"
         })
-
         await setDoc(quizesDocReference, {
             uid: user_id,
             quizes: [],
         })
     }
-
-
 }
 
 async function register(): Promise<void> {
     const auth: Auth = getAuth();
-    console.log(auth);
+    firebaseError.value = null
+
+    if (errors.value.email !== null || errors.value.password !== null || errors.value.confirmPassword !== null) return
 
     try {
         await createUserWithEmailAndPassword(
@@ -60,7 +89,13 @@ async function register(): Promise<void> {
 
     } catch (error: any) {
         console.log('Error while registering', error.code);
+        const formattedError = error.code
+            .replace(/^auth\//, '') // Remove "auth/"
+            .split('-') // Split by "-"
+            .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)) // Uppercase first letter of each word
+            .join(' '); // Join with spaces
 
+        firebaseError.value = formattedError
     }
 
 
@@ -71,20 +106,36 @@ async function register(): Promise<void> {
     <h1>Create an Account</h1>
     <form @submit.prevent="register" class="form">
         <label for="email">Email</label>
-        <input name="email" placeholder="Enter your email" type="email" id="email" v-model="register_form.email" />
+        <input @blur="validateField('email')" :class="{ 'active-error': errors.email }" name="email"
+            placeholder="Enter your email" type="email" id="email" v-model="register_form.email" />
+
+        <span role="error message" v-if="errors.email" class="zod-error">{{ errors.email }}</span>
 
         <label for="password">Password</label>
-        <input name="password" type="password" id="password" placeholder="Enter your password"
-            v-model="register_form.password" />
+        <input @input="validateField('password')" @blur="validateField('password')"
+            :class="{ 'active-error': errors.password }" name="password" type="password" id="password"
+            placeholder="Enter your password" v-model="register_form.password" />
+
+        <span role="error message" v-if="errors.password" class="zod-error">{{ errors.password }}</span>
+
 
         <label for="passwordConfirmation">Confirm Password:</label>
-        <input name="passwordConfirmation" type="password" id="passwordConfirmation" placeholder="Comfirm your password"
-            v-model="register_form.confirmPassword" autocomplete="new-password" />
+        <input @input="validateField('confirmPassword')" @blur="validateField('confirmPassword')"
+            :class="{ 'active-error': errors.confirmPassword }" name="passwordConfirmation" type="password"
+            id="passwordConfirmation" placeholder="Comfirm your password" v-model="register_form.confirmPassword"
+            autocomplete="new-password" />
+
+        <span role="error message" v-if="errors.confirmPassword" class="zod-error">{{ errors.confirmPassword }}</span>
+
 
         <button class="submit-button" type="submit">
             <p>Continue</p>
             <p> {{ "✔" }}</p>
         </button>
+
+        <div v-if="firebaseError" class="firebase-error">
+            <span role="error message">{{ firebaseError }}</span>
+        </div>
     </form>
 </template>
 
@@ -115,6 +166,33 @@ label {
 
 }
 
+.zod-error {
+    display: flex;
+    flex-direction: column;
+    margin-top: 5px;
+    margin-left: .8rem;
+    margin-bottom: 20px;
+    font-size: calc(var(--p-size)/1.3);
+    color: var(--error-color);
+    font-weight: 400;
+    transition: all;
+}
+
+.firebase-error {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    margin-left: .8rem;
+    margin-bottom: 20px;
+    font-size: calc(var(--p-size)/1.25);
+    color: var(--error-color);
+    font-weight: 500;
+}
+
+.firebase-error span {
+    max-width: 350px;
+}
+
 input {
     display: flex;
     align-items: center;
@@ -124,6 +202,31 @@ input {
     border-radius: var(--input-radius);
     font-size: medium;
     border: 1px solid hsl(0, 0%, 86%);
+}
+
+input.active-error {
+    border: 1px solid var(--error-color);
+}
+
+
+.form input.active-error {
+    margin-bottom: 0;
+}
+
+.form input:last-of-type.active-error {
+    margin-bottom: 0;
+}
+
+
+
+input::placeholder {
+    opacity: 1;
+    font-size: clamp(.8rem, 2vw, .88rem);
+}
+
+input:focus {
+    outline: none;
+    box-shadow: 0 0 2px hsl(0, 0%, 10%);
 }
 
 input::placeholder {
