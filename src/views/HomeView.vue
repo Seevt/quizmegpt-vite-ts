@@ -4,22 +4,13 @@ import HomeNav from '@/components/Home Components/HomeNav.vue';
 import QuizComponent from '@/components/Home Components/QuizComponent.vue';
 import ResultsComponent from '@/components/Home Components/ResultsComponent.vue';
 
-import QuizInput from '@/components/Home Components/QuizInput.vue';
-import InputActions from '@/components/Home Components/InputActions.vue';
+import QuizControls from '@/components/Home Components/QuizControls.vue';
 import { useUserStore } from '@/stores/user';
 import { useQuizStore, } from '@/stores/quiz';
-
-
-
-
-
 
 // pinia stores
 const userStore = useUserStore();
 const quizStore = useQuizStore();
-
-
-
 
 </script>
 
@@ -39,10 +30,7 @@ const quizStore = useQuizStore();
                     and get points from your
                     matches!
                 </p>
-
-                <QuizInput />
-                <InputActions />
-
+                <QuizControls />
             </div>
             <img v-if="quizStore.quizGenerated" class="illustration" src="@/assets/imgs/home-vector-design.png"
                 alt="illustration vector">
