@@ -123,6 +123,7 @@ async function generateQuiz(): Promise<void> {
     quizStore.score = 0;
     quizStore.questionIndex = 0;
     quizStore.loading = true;
+    quizStore.quizGenerated = false;
     let response: string;
     try {
         response = await getQuizFromChatGPT(
@@ -145,9 +146,6 @@ async function generateQuiz(): Promise<void> {
         console.log("Failed to parse questions from API response");
     }
 }
-
-
-
 </script>
 
 <template>
@@ -172,7 +170,7 @@ async function generateQuiz(): Promise<void> {
                 class="disabledStyle">
                 Generate Quiz
             </BaseButton>
-            <button class="info-button" @click="toggleModal">?</button>
+            <button type="button" class="info-button" @click="toggleModal">?</button>
         </div>
         <VueModal teleport="#home_modal" closeOnBackground :styling="{ overflowY: 'auto' }" defaultPosition
             :controller="homeModal">
