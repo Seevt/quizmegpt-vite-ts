@@ -150,12 +150,7 @@ async function generateQuiz(): Promise<void> {
 
 <template>
     <form @submit.prevent="generateQuiz">
-        <div :class="{
-            'active-error':
-                quizStore.validationErrors.topic
-                ||
-                quizStore.validationErrors.difficulty
-        }" class="input-wrapper">
+        <div class="input-wrapper">
             <input type="text" v-model="quizStore.topic" placeholder="Enter any topic...">
             <select v-model="quizStore.difficulty" class="select remove-select-styles" name="dificulty-selector">
                 <option disabled value="">Select difficulty</option>

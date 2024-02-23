@@ -10,6 +10,7 @@ export type QuizQuestions = {
 export const useQuizStore = defineStore("quiz", () => {
   const difficulty = ref("");
   const topic = ref("");
+
   const questions = ref<QuizQuestions[]>([]);
   const userAnswers = ref<string[]>([]);
   const quizGenerated = ref(false);
