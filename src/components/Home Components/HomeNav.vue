@@ -11,7 +11,7 @@ const userStore = useUserStore();
             <RouterLink class="logo-container  nav-controls" to="/home">
                 <h1 class="logo-name">QUIZME</h1>
             </RouterLink>
-            <RouterLink v-if="!userStore.isLoggedIn" class="nav-button nav-controls" to="/login">
+            <RouterLink v-if="!userStore.isLoggedIn" class="nav-button nav-controls" to="/access">
                 Log In
             </RouterLink>
             <RouterLink v-else to="/profile" class="nav-button nav-controls">
