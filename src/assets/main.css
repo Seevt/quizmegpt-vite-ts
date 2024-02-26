@@ -87,6 +87,7 @@ svg {
   --accent-color: hsl(37, 100%, 73%);
   --bg-color: whitesmoke;
   --text-color: #4e4e4e;
+  --error-color: #d73636cc;
 
   /* FONT FAMILY  */
   --roboto: "Roboto", sans-serif;
@@ -128,3 +129,4 @@ a {
 label {
   font-size: var(--p-size);
 }
+
