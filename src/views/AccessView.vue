@@ -4,7 +4,7 @@ import Register from '@/components/Login Components/Register.vue';
 import { getAuth, sendPasswordResetEmail, type Auth } from 'firebase/auth';
 import { useRouter, useRoute } from 'vue-router';
 
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 
 const route = useRoute()
 const router = useRouter()
@@ -29,7 +29,6 @@ function changeForm() {
   }
 }
 
-console.log(componentQuery.value, route.query.type);
 
 let auth: Auth;
 async function resetPassword(): Promise<void> {
