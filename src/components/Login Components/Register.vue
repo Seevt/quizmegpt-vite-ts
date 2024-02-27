@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import { getAuth, createUserWithEmailAndPassword, type Auth } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { useRouter } from 'vue-router';
 import { db } from '@/main'
+import { debounce } from '@/utils/debounce'
 import * as z from 'zod';
-
-
 
 const router = useRouter()
 
@@ -35,18 +34,35 @@ const errors = ref<{ email: string | null, password: string | null, confirmPassw
 
 
 function validateField(fieldName: keyof typeof formSchema.shape) {
-    try {
+    const debouncedValidate = debounce(() => {
+        try {
+            formSchema.shape[fieldName].parse(register_form.value[fieldName]);
+            errors.value[fieldName] = null;
+            console.log(errors.value);
 
-        formSchema.shape[fieldName].parse(register_form.value[fieldName]);
-        errors.value[fieldName] = null;
-
-    } catch (error: any) {
-        errors.value[fieldName] = error.issues[0].message
-    }
+        } catch (error: any) {
+            errors.value[fieldName] = error.issues[0].message
+        }
+    }, 1000)
+    debouncedValidate();
 }
 
+function handleInput<T extends keyof typeof formSchema.shape>(
+    fieldName: T,
+    event: Event
+) {
+    const inputElement = event.target as HTMLInputElement;
+    const inputValue = inputElement.value;
 
+    const debouncedHandle = debounce(() => {
+        // save input values in session storage with debounce
+        sessionStorage.setItem(fieldName, inputValue);
 
+        // validate field
+        validateField(fieldName)
+    }, 1000)
+    debouncedHandle()
+}
 
 async function checkUserAndCreateDocument(user_id: string) {
     const auth: Auth = getAuth();
@@ -75,12 +91,7 @@ async function checkUserAndCreateDocument(user_id: string) {
 async function register(): Promise<void> {
     const auth: Auth = getAuth();
     firebaseError.value = null
-
-
     try {
-
-
-
         await createUserWithEmailAndPassword(
             auth,
             register_form.value.email, register_form.value.password
@@ -99,17 +110,24 @@ async function register(): Promise<void> {
 
         firebaseError.value = formattedError
     }
-
-
 }
+
+onMounted(() => {
+    for (const [key, value] of Object.entries(sessionStorage)) {
+        if (key in register_form.value) {
+            (register_form.value as any)[key] = value
+        }
+    }
+})
 </script>
 
 <template>
     <h1>Create an Account</h1>
     <form @submit.prevent="register" class="form">
         <label for="email">Email</label>
-        <input @blur="validateField('email')" :class="{ 'active-error': errors.email }" name="email"
-            placeholder="Enter your email" type="email" id="email" v-model="register_form.email" />
+        <input @input="handleInput('email', $event)" @blur="validateField('email')"
+            :class="{ 'active-error': errors.email }" name="email" placeholder="Enter your email" type="email" id="email"
+            v-model="register_form.email" />
 
         <span role="error message" v-if="errors.email" class="zod-error">{{ errors.email }}</span>
 
